@@ -1,7 +1,7 @@
 # #######################################################################################
 # ### SS3 stuff for Kobe ################################################################
 # #######################################################################################
-
+  
 utils::globalVariables(c("bio"))
 
 #setMethod('kobeMFCL', signature(object='character'),
@@ -121,13 +121,11 @@ object="/home/laurie/Desktop/Dropbox/collaboration/Shelton/ALBN/4B/plot-09.par.r
   
 ## Heavy lifting functions ##############################################################
 ioMFCL=function(object,prob=c(0.75,0.5,0.25),nwrms=10,what=c("sims","trks","pts","smry","wrms")[1]){
-  
-  
+
   if (!all(what %in% c("trks","pts","smry","wrms","sims"))) stop("what not in valid options")
   
   res=data.frame(year=getyrs(object),stock=getB2Bmsy(object),harvest=getF2Fmsy(object),ssb=getSB2SBmsy(object))
   
-
   trks. =NULL
   pts.  =NULL
   smry. =NULL
@@ -159,7 +157,7 @@ ioMFCL=function(object,prob=c(0.75,0.5,0.25),nwrms=10,what=c("sims","trks","pts"
   #if ("wrms" %in% what)
   #  wrms.=res[res$iter %in% sample(unique(res$iter),nwrms),c("iter","year","ssb","harvest")]
   
-  if (length(what)==1) return(res[[what]])
+  res=list(trks=trks.,pts=pts.,smry=smry.,wrms=wrms.,sims=sims.)
   
-  return(list(trks=trks.,pts=pts.,smry=smry.,wrms=wrms.,sims=sims.))}
-
+  return(res)}  
+  
