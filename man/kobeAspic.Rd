@@ -28,8 +28,9 @@
 If of length 1 then a data.frame is returned, if >1 then a list of data.frames.}
 
 \examples{
-## Not run:
-aBio="http://gbyp-sam.googlecode.com/svn/trunk/data/ASPIC/whm/2012/noBrazll/whmrun17nbb.bio"
+\dontrun{
+
+aBio="http://gbyp-sam.googlecode.com/svn/trunk/data/ASPIC/whm/2012/noBrazil/aspic .bio"
 
 res=kobeAspic(aBio,what=c("pts","trks"))
 
@@ -37,8 +38,7 @@ kobePhase(res$pts)+
      geom_point(aes(stock,harvest))+
      geom_path( aes(stock,harvest),data=subset(res$trks,Percentile=="50\%"))+
      scale_y_continuous(limits=c(0,3))
-
-## End(Not run)
+}
 }
 
 \seealso{

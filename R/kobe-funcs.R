@@ -54,3 +54,47 @@ kobeProb=function(x,y,prob=c(0.5, 0.75,0.95),na.rm=FALSE){
   
   return(prb)}
 
+setMethod('kobe',  signature(file="data.frame",method="missing"), 
+          function(file,what=c("sims","trks","pts","smry","wrms")[1],prob=c(0.75,0.5,.25),ptYrs=NULL,nwrms=10){ 
+            kobeFn(file,what=what,prob=prob,ptYrs=ptYrs,nwrms=nwrms)})
+
+kobeFn=function(file,what=what,prob=prob,ptYrs=pYrs,nwrms=nwrms){
+            
+            object=file
+            
+            trks. =NULL
+            pts.  =NULL
+            smry. =NULL
+            wrms. =NULL
+            sims. =NULL
+            
+            ## trks
+            if ("trks" %in% what)
+              trks.=ddply(object,.(year), with, data.frame(stock  =quantile(stock,    prob, na.rm=T),
+                                                           harvest=quantile(harvest,  prob, na.rm=T)))
+            
+            if ("pts" %in% what & !is.null(ptYrs))
+              pts. ==object[object$year==ptYrs,]
+            
+            
+            if ("smry" %in% what)
+              smry. =ddply(kobeP(sims), .(year), function(x) data.frame(stock      =median(stock(object),       na.rm=T),
+                                                                        harvest    =median(harvest(object),     na.rm=T),
+                                                                        red        =mean(  x$red,         na.rm=T),
+                                                                        yellow     =mean(  x$yellow,      na.rm=T),
+                                                                        green      =mean(  x$green,       na.rm=T),
+                                                                        overFished =mean(  x$overFished,  na.rm=T),
+                                                                        overFishing=mean(  x$overFishing, na.rm=T)))
+            if ("wrms" %in% what){          
+              wrms =sample(unique(res$iter),nwrms)
+              wrms.=sims[sims$iter %in% wrms,]
+            }
+            
+            if ("sims" %in% what)     
+              sims. =object
+            
+            res=list(trks=trks.,pts=pts.,smry=smry.,wrms=wrms.,sims=sims.)
+            
+            res}
+
+

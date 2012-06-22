@@ -25,9 +25,10 @@ If of length 1 then a data.frame is returned, if >1 then a list of data.frames.
 }
 \examples{
 
-## Not run:
-#kobeMFCL()
-## End(Not run)
+\dontrun{
+
+kobeMFCL("bft")
+}
 
 }
 \seealso{

@@ -77,7 +77,7 @@ Use \url{http://www.tuna-org.org/Documents/TRFMO3/K3-REC_ENG.pdf} %or \href{}{} 
 ### examples of the most important functions ###
 
 ## Example file on google code
-aBio="http://gbyp-sam.googlecode.com/svn/trunk/data/ASPIC/whm/2012/noBrazll/whmrun17nbb.bio"
+aBio="http://gbyp-sam.googlecode.com/svn/trunk/data/ASPIC/whm/2012/noBrazil/aspic.bio"
 
 ## reads in data for kobe phase plot
 res=kobeAspic(aBio,what=c("pts","trks"))

@@ -13,8 +13,8 @@ kobeMFCL=function(object,dir="",what=c("sims","trks","pts","smry","wrms")[1],
             
             if (length(object)>1){
               res=mlply(object, function(x,prob=prob,nwrms=nwrms,what=what)
-                ioMFCL(x,prob=prob,nwrms=nwrms,what=what),
-                        bio=bio,prob=prob,nwrms=nwrms,what=what)
+                ioMFCL(x,what=what,prob=prob,ptYrs=ptYrs,nwrms=nwrms),
+                        bio=bio,what=what,ptYrs=ptYrs,prob=prob,nwrms=nwrms)
               
               res=list(trks=ldply(res, function(x) x$trks),
                        pts =ldply(res, function(x) x$pts),
@@ -120,11 +120,11 @@ getplotdat4 <- function(h="",plotrepfile) {
 object="/home/laurie/Desktop/Dropbox/collaboration/Shelton/ALBN/4B/plot-09.par.rep"
   
 ## Heavy lifting functions ##############################################################
-ioMFCL=function(object,prob=c(0.75,0.5,0.25),nwrms=10,what=c("sims","trks","pts","smry","wrms")[1]){
+ioMFCL=function(object,what=c("sims","trks","pts","smry","wrms")[1],prob=c(0.75,0.5,0.25),ptYrs=NULL,nwrms=10){
 
   if (!all(what %in% c("trks","pts","smry","wrms","sims"))) stop("what not in valid options")
   
-  res=data.frame(year=getyrs(object),stock=getB2Bmsy(object),harvest=getF2Fmsy(object),ssb=getSB2SBmsy(object))
+  res=data.frame(year=getyrs(object),biomass=getB2Bmsy(object),harvest=getF2Fmsy(object),stock=getSB2SBmsy(object),ssb=getSB2SBmsy(object))
   
   trks. =NULL
   pts.  =NULL
@@ -161,3 +161,5 @@ ioMFCL=function(object,prob=c(0.75,0.5,0.25),nwrms=10,what=c("sims","trks","pts"
   
   return(res)}  
   
+
+

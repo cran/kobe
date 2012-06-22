@@ -36,7 +36,7 @@ takes as input a data.frame with columns names as \code{stock} and \code{harvest
 }
 \examples{
 
-## Not Run
+\dontrun{
 data(sims)
 ## calculate probabilities
 res=ddply(subset(sims, year > 2010 & year <= 2020),.(year,TAC), kobeSmry)
@@ -49,7 +49,7 @@ res=ddply(subset(sims, year > 2010 & year <= 2020),.(year,TAC), kobeSmry)
 
 ## K2SM for green quadrant
 cast(res,TAC~year,value="green")
-## End(Not run)
+}
 
 }
 

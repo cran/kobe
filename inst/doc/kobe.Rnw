@@ -1,4 +1,4 @@
-% kobe.Rnw --
+  % kobe.Rnw --
 %
 % Author: laurence kell <lauriekell@gmail.com>
 
@@ -23,7 +23,7 @@
 %\newcommand{\proglang}[1]{\textsf{#1}}
 %\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
 
-\author{Laurence Kell\\ICCAT} % \And Romain Fran\c{c}ois\\\proglang{R} Enthusiasts}
+\author{Laurence Kell\\ICCAT}
 \Plainauthor{Laurence Kell}
 
 \title{\pkg{kobe}: \proglang{R} tools for Tuna Management Advice}
@@ -71,6 +71,7 @@ TACs=seq(15000,35000,5000)
 %
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 %------ Frontmatter ------
 \title{Kobe Plotting}

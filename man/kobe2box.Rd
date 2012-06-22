@@ -1,4 +1,4 @@
-\name{kobe2box}
+	\name{kobe2box}
 \alias{kobe2box}
 \title{Reads pro2box projection results and returns stock and harvest rate relative to MSY reference points or proxies.}
 \usage{
@@ -25,10 +25,9 @@ If of length 1 then a data.frame is returned, if >1 then a list of data.frames
 }
 \examples{
 
-## Not run:
-#kobe2box()
-## End(Not run)
-
+\dontrun{
+kobe2box("bft")
+}
 }
 \seealso{
   \code{\link{kobeAspic}},\code{\link{kobeMFCL}},\code{\link{kobeSS3}}

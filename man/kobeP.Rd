@@ -21,14 +21,11 @@
 }
 \examples{
 
-## Not Run
-
-## Not Run
+\dontrun{
 data(sims)
 ## where is point
 res=head(kobeP(sims$stock,sims$harvest))
-## End(Not run)
-
+}
 }
 
 \seealso{

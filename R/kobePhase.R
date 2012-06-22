@@ -23,7 +23,8 @@ setMethod('kobePhase', signature(object='missing'),
        invisible(kobePhaseFn(NULL,xlim,ylim))})
 
 setMethod('kobePhase', signature(object='data.frame'),
-  function(object,xlim=c(0,2),ylim=xlim){
+  function(object,xlim=c(0,ceiling(2*max(object$stock))/2),
+                  ylim=c(0,ceiling(2*max(object$harvest))/2)){
     
        invisible(kobePhaseFn(object,xlim,ylim))})
 

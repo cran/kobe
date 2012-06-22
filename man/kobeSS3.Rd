@@ -28,9 +28,9 @@ If of length 1 then a data.frame is returned, if >1 then a list of data.frames.
 }
 \examples{
 
-## Not run:
-#kobeSS3()
-## End(Not run)
+\dontrun{
+kobeSS3("bft")
+}
 
 }
 \seealso{

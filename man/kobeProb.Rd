@@ -18,8 +18,10 @@
 }
 \examples{
 
-## Not Run
-## End(Not run)
+\dontrun{
+data(prj)
+geom_path(aes(x,y,group=level),colour="blue",
+          data=kobeProb(prj$pts$stock,prj$pts$harvest,prob=c(0.7,.5,.25)))}
 
 }
 \seealso{

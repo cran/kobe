@@ -24,9 +24,11 @@ Borrowed with thanks from http://wiki.stdout.org/rcookbook/Graphs/Multiple%20gra
 }
 \examples{
 
-## Not Run
-## End(Not run)
+\dontrun{
+a=ggplot(data.frame(x=1:10,y=1:10))+geom_point(aes(x,y))
+multiplot(a,a)
 
+}
 }
 \seealso{
 
