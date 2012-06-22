@@ -109,8 +109,8 @@ and to formulate advice in a common framework. Therefore in the \pkg{kobe} there
 data.frames summarising stock (biomass or SSB) and harvest (fishing mortality or harvest rate) by scenarios (e.g. assessment run), 
 management option (e.g. TACs) used in projecions and replicates from bootstraps or Monte Carlo Markov Chain simulations.
 
-Currently there are methods for reading in stock assessment text files for ASPIC, Adapt, SS3 and MFCL (i.e. \code{kobeAspic}, \code{kobe2box}, 
-\code{kobeSS3} and \code{kobeMFCL}). 
+Currently there are methods for reading in stock assessment text files for ASPIC, Adapt, SS and MFCL (i.e. \code{kobeAspic}, \code{kobe2box}, 
+\code{kobeSS} and \code{kobeMFCL}). 
 
 Here we demonstrate how to read in outputs from \code{ASPIC}.
 
@@ -393,13 +393,31 @@ ggplot(subset(pie.dat,value>0), aes(x =factor(1), y=value, fill = variable)) +
 \subsubsection{Kobe II Strategy Matrix}
 
 \begin{figure}\begin{center}
-<<echo=TRUE,fig=TRUE,width=6,height=8>>=
+<<echo=TRUE,fig=TRUE,width=6,height=8,eval=FALSE>>=
+Interp=function(x,levels=seq(0.0,1.0,0.05),
+               col   =c(colorRampPalette(c("red4","red"))(12),colorRampPalette(c("yellowgreen","darkgreen"))(8)),
+               nIterp=101){
+
+  x=x[!is.na(x[,1]) & !is.na(x[,2]) & !is.na(x[,3]),]
+  
+  ##### smooth
+  t.<-interp(x[,1],x[,2],x[,3],
+                    xo=seq(min(x[,1]),   max(x[,1]), length=nIterp),
+                    yo=seq(min(x[,2]),   max(x[,2]), length=nIterp),
+                    duplicate="mean")
+  
+  
+  res=cbind(expand.grid(x=t.$x,y=t.$y),z=cut(t.$z,levels,include.lowest=T),w=c(t.$z))
+  res$col=col[as.numeric(res$z)]
+  
+  res}
+
 kobe2012=subset(sims,year %in% 2013:2022)
   
 pdat=subset(ddply(kobe2012,.(year,TAC),kobeSmry),
             select=c(year,TAC,green,underFished,underFishing))
 pdat=melt(pdat,id.vars=c("year","TAC"))
-pdat=ddply(pdat, .(variable), function(x) kobeInterp(data.frame(x$year,x$TAC,x$value)))
+pdat=ddply(pdat, .(variable), function(x) Interp(data.frame(x$year,x$TAC,x$value)))
 
 col.=c(colorRampPalette(c("red4","red"))(12),
        colorRampPalette(c("yellowgreen","darkgreen"))(8))
