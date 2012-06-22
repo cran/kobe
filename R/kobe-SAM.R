@@ -1,6 +1,8 @@
-  # #######################################################################################
+# #######################################################################################
 # ### sam stuff for Kobe ################################################################
 # #######################################################################################
+
+utils::globalVariables(c("pctl","FLQuant","stock.n<-","propagate","stock.n","harvest<-"))
 
 readSam<-function(file, reduced=FALSE){
   # Function to read a basic fit
@@ -124,14 +126,13 @@ samNF=function(sam,dir,nits=1000){
   
   rnd=c(t(mvrnorm(nits,res$est[mm],res$cov[mm,mm])))
   rnd=array(c(rnd),c(length(ags)*2-1,length(yrs),nits))
-#   rnd=FLQuant(exp(c(rnd)),dimnames=list(age=seq(length(ags)*2-1),year=yrs,iter=seq(nits)))
-#   
-#   stock.n(sam)=propagate(stock.n(sam),nits)
-#   harvest(sam)=propagate(harvest(sam),nits)
-#   
-#   stock.n(sam)[                  ]=rnd[seq(ags)]
-#   harvest(sam)[seq(length(ags)-1)]=rnd[seq(length(ags)-1)+length(ags)]
-#   harvest(sam)[max(ags)          ]=rnd[length(ags)*2-1]
-#   
-#   return(sam)
-    return(NULL)}
+  rnd=FLQuant(exp(c(rnd)),dimnames=list(age=seq(length(ags)*2-1),year=yrs,iter=seq(nits)))
+   
+  stock.n(sam)=propagate(stock.n(sam),nits)
+  harvest(sam)=propagate(harvest(sam),nits)
+   
+   stock.n(sam)[                  ]=rnd[seq(ags)]
+   harvest(sam)[seq(length(ags)-1)]=rnd[seq(length(ags)-1)+length(ags)]
+   harvest(sam)[max(ags)          ]=rnd[length(ags)*2-1]
+   
+   return(sam)}

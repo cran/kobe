@@ -8,8 +8,10 @@ kobePhaseMar=function(pts,trks=NULL,mns=FALSE,size=1,
              shade=.5,col2=grey(shade),col3=grey(shade*1.1)){
      
     if (!("group" %in% names(pts)))
-       pts=cbind(pts,group=1)
-
+       pts=cbind(pts,group=factor(1))
+    if (!is.null(trks) & !("group" %in% names(trks)))
+      trks=cbind(trks,group=factor(1))
+ 
     if ("function" %in% is(col))
        col=col(length(unique(pts$group)))
    
@@ -19,9 +21,9 @@ kobePhaseMar=function(pts,trks=NULL,mns=FALSE,size=1,
     dS<-ggplot(pts) + 
           geom_density(aes(x = stock, y =  ..count.., group=group), fill=col2, col=col3, position = "stack") + 
           geom_density(aes(x = stock, y = -..count.., fill =group, alpha=0.4)) + 
-          geom_vline(xintercept=1,col="red")  +
+          geom_vline(xintercept=1,col="red")       +
               scale_x_continuous(limits=c(0,maxX)) +
-              scale_fill_manual(values=col)+
+              scale_fill_manual(values=col)        +
               xlab(xlab) + ylab(ylab)              +
               theme(legend.position = "none", 
                     axis.title.y = element_text(colour='NA'), 
@@ -44,8 +46,8 @@ kobePhaseMar=function(pts,trks=NULL,mns=FALSE,size=1,
           geom_density(aes(x = harvest, y =  ..count.., group=group), fill=col2, col=col3, position = "stack") + 
           geom_density(aes(x = harvest, y = -..count..,               fill=group, alpha=0.4)) + 
           geom_vline(xintercept=1,col="red")  +
-              scale_x_continuous(limits=c(0,maxY)) +
-              scale_fill_manual(values=col)+
+              scale_x_continuous(limits=c(0,maxY))   +
+              scale_fill_manual(values=col)          +
               xlab(xlab) + ylab(ylab)                +
               theme(legend.position = "none", 
                     axis.title.x = element_text(colour ='NA'), 
@@ -69,13 +71,19 @@ kobePhaseMar=function(pts,trks=NULL,mns=FALSE,size=1,
        geom_point(aes(stock,harvest,col=group,group=group),size=size) +  
        scale_y_continuous(limits=c(0,maxY)) +
        scale_x_continuous(limits=c(0,maxX)) +
-       xlab(xlab) + ylab(ylab)              +
        scale_colour_manual(values=col)      +
+       xlab(xlab) + ylab(ylab)              +
        theme(legend.position = "none",
              axis.text.y  = element_text(colour="grey", angle=90), 
              plot.margin = unit(c(0, 0, 1, 1), "lines")
        )
    
+#     if (length(group)>1){
+#         dS=dS+scale_fill_manual(values=col)
+#         dH=dH+scale_fill_manual(values=col)
+#         kC=kC+scale_colour_manual(values=col)      
+#         }
+#     
     if (mns)
         kC=kC+geom_point(aes(stock,harvest,col=group,group=group),size=6.0*size, colour="black",  data=ddply(pts,.(group),function(x) data.frame(stock=median(x$stock),harvest=median(x$harvest)))) +
               geom_point(aes(stock,harvest,col=group,group=group),size=4.5*size, colour="cyan",   data=ddply(pts,.(group),function(x) data.frame(stock=median(x$stock),harvest=median(x$harvest))))
@@ -94,4 +102,5 @@ kobePhaseMar=function(pts,trks=NULL,mns=FALSE,size=1,
         }
     
     fnVP(dH,dS,kC)
+    
     invisible(list(harvest=dH,stock=dS,phase=kC))}
