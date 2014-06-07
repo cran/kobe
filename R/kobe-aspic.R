@@ -1,9 +1,11 @@
-# #######################################################################################
-# ### aspic stuff for Kobe ##############################################################
-# #######################################################################################
+########################################################################################
+#### aspic stuff for Kobe ##############################################################
+########################################################################################
 
 #### exported function
-kobeAspic=function(object,prb=NULL,dir="",what=c("sims","trks","pts","smry","wrms")[1],prob=c(0.75,0.5,.25),year=NULL,nwrms=10){
+kobeAspic=function(object,prb=NULL,dir="",
+                   what=c("sims","trks","pts","smry","wrms")[1],
+                   prob=c(0.75,0.5,.25),year=NULL,nwrms=10){
     
     if (dir!=""){
       bio=paste(dir,object,sep="/")
@@ -32,28 +34,34 @@ kobeAspic=function(object,prb=NULL,dir="",what=c("sims","trks","pts","smry","wrm
 
 #### read ASPIC bootstrapped assessment file 
 aspicBio=function(file){
-  t.  <-scan(file,skip=4)
-  nits<-scan(file,skip=1,nmax=1)
-  yrs <-scan(file,skip=2,nmax=2)
-  nyrs<-diff(yrs)
-  nval<-nyrs*2+3
   
-  yrs <-yrs[1]:yrs[2]
-  
-  b.  <-data.frame(stock  =t.[unlist(tapply(((1:nits)-1)*nval+2,     1:nits,function(x,y=nyrs+1)  x:(x+y-1)))],year=yrs,               iter=rep(1:nits,each=length(yrs)))
-  f.  <-data.frame(harvest=t.[unlist(tapply(((1:nits)-1)*nval+nyrs+4,1:nits,function(x,y=nyrs)    x:(x+y-1)))],year=yrs[-length(yrs)], iter=rep(1:nits,each=(length(yrs)-1)))
-  
-  bmsy<-data.frame(bmsy=t.[unlist(tapply(((1:nits)-1)*nval+1,     1:nits,function(x,y=1)      x:(x+y-1)))],iter=1:nits)
-  fmsy<-data.frame(fmsy=t.[unlist(tapply(((1:nits)-1)*nval+nyrs+3,1:nits,function(x,y=1)      x:(x+y-1)))],iter=1:nits)
-  
-  sh   =merge(b.,  f.,  by=c("iter","year"))
-  rf   =merge(bmsy,fmsy,by=c("iter"))
-  res  =merge(sh,rf, by=c("iter"))
-  
-  res$stock  =res$stock/res$bmsy
-  res$harvest=res$harvest/res$fmsy
-  
-  return(res[do.call("order",res[,c("iter","year")]),c("iter","year","stock","harvest","bmsy","fmsy")])}
+  rtn=NULL
+  for (iFile in file){
+    t.  <-scan(iFile,skip=4)
+    nits<-scan(iFile,skip=1,nmax=1)
+    yrs <-scan(iFile,skip=2,nmax=2)
+    nyrs<-diff(yrs)
+    nval<-nyrs*2+3
+    
+    yrs <-yrs[1]:yrs[2]
+    
+    b.  <-data.frame(stock  =t.[unlist(tapply(((1:nits)-1)*nval+2,     1:nits,function(x,y=nyrs+1)  x:(x+y-1)))],year=yrs,               iter=rep(1:nits,each=length(yrs)))
+    f.  <-data.frame(harvest=t.[unlist(tapply(((1:nits)-1)*nval+nyrs+4,1:nits,function(x,y=nyrs)    x:(x+y-1)))],year=yrs[-length(yrs)], iter=rep(1:nits,each=(length(yrs)-1)))
+    
+    bmsy<-data.frame(bmsy=t.[unlist(tapply(((1:nits)-1)*nval+1,     1:nits,function(x,y=1)      x:(x+y-1)))],iter=1:nits)
+    fmsy<-data.frame(fmsy=t.[unlist(tapply(((1:nits)-1)*nval+nyrs+3,1:nits,function(x,y=1)      x:(x+y-1)))],iter=1:nits)
+    
+    sh   =merge(b.,  f.,  by=c("iter","year"))
+    rf   =merge(bmsy,fmsy,by=c("iter"))
+    res  =merge(sh,rf, by=c("iter"))
+    
+    res$stock  =res$stock/res$bmsy
+    res$harvest=res$harvest/res$fmsy
+   
+    rtn=rbind(rtn,cbind(run=iFile,res))
+    }
+
+  return(rtn[do.call("order",rtn[,c("run","iter","year")]),c("run","iter","year","stock","harvest","bmsy","fmsy")])}
 
 #### reads ASPIC projection file
 aspicPrb=function(file){
@@ -88,12 +96,14 @@ aspicPrb=function(file){
 
 
 ## Heavy lifting functions 
-ioAspic=function(bio,prb,prob=c(0.75,0.5,.25),what=c("sims","trks","pts","smry","wrms")[1],year=NULL,nwrms=10){
+ioAspic=function(bio,prb,prob=c(0.75,0.5,.25),
+                 what=c("sims","trks","pts","smry","wrms")[1],
+                 year=NULL,nwrms=10){
     
     if (!all(what %in% c("trks","pts","smry","wrms","sims"))) stop("what not in valid options")
     
-    if (tolower(getExt(bio)) %in% "bio") 
-       bio.=aspicBio(bio) else stop("Second arg not a .bio file")
+    if (all(tolower(getExt(bio)) %in% "bio")) 
+       bio.=aspicBio(bio) else stop("Arg not a .bio file")
     
     if (!is.null(prb)){
       if (tolower(getExt(prb)) %in% "prb") 
@@ -113,8 +123,8 @@ ioAspic=function(bio,prb,prob=c(0.75,0.5,.25),what=c("sims","trks","pts","smry",
     sims. =NULL
         
     if ("trks" %in% what){ 
-      stock  =ddply(res,.(year),function(x) quantile(x$stock,    prob, na.rm=T))
-      harvest=ddply(res,.(year),function(x) quantile(x$harvest,  prob, na.rm=T))
+      stock  =ddply(res,.(year),function(x) quantile(x$stock,    prob, na.rm=TRUE))
+      harvest=ddply(res,.(year),function(x) quantile(x$harvest,  prob, na.rm=TRUE))
       trks.=data.frame(melt(stock,id.vars="year"),"harvest"=melt(harvest,id.vars="year")[,3])
       names(trks.)[c(2,3)]=c("Percentile","stock")}
     
@@ -126,13 +136,13 @@ ioAspic=function(bio,prb,prob=c(0.75,0.5,.25),what=c("sims","trks","pts","smry",
     
     if ("smry" %in% what)
        smry. =ddply(data.frame(res,kobeP(res$stock,res$harvest)),
-                           .(year), function(x) data.frame(stock      =median(x$stock,       na.rm=T),
-                                                           harvest    =median(x$harvest,     na.rm=T),
-                                                           red        =mean(  x$red,         na.rm=T),
-                                                           yellow     =mean(  x$yellow,      na.rm=T),
-                                                           green      =mean(  x$green,       na.rm=T),
-                                                           overFished =mean(  x$overFished,  na.rm=T),
-                                                           overFishing=mean(  x$overFishing, na.rm=T)))
+                           .(year), function(x) data.frame(stock      =median(x$stock,       na.rm=TRUE),
+                                                           harvest    =median(x$harvest,     na.rm=TRUE),
+                                                           red        =mean(  x$red,         na.rm=TRUE),
+                                                           yellow     =mean(  x$yellow,      na.rm=TRUE),
+                                                           green      =mean(  x$green,       na.rm=TRUE),
+                                                           overFished =mean(  x$overFished,  na.rm=TRUE),
+                                                           overFishing=mean(  x$overFishing, na.rm=TRUE)))
     
     if ("wrms" %in% what)
       wrms.=res[res$iter %in% sample(unique(res$iter),nwrms),c("iter","year","stock","harvest")]

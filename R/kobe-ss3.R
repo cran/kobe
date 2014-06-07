@@ -1,26 +1,24 @@
 # #######################################################################################
-# ### SS stuff for Kobe #################################################################
+# ### SS3 stuff for Kobe ################################################################
 # #######################################################################################
 
-utils::globalVariables(c("yrs","pts"))
+utils::globalVariables(c("yrs","yrs","pts"))
 
-#setMethod('kobeSS', signature(object='character'),
-kobeSS=function(object,nrows=-1,thin=1,what=c("sims","trks","pts","smry","wrms")[1],
-                        prob=c(0.75,0.5,0.25),year=NULL,nwrms=10){
+#setMethod('kobeSS3', signature(object='character'),
+kobeSS3=function(object,nrows=-1,thin=1,what=c("sims","trks","pts","smry","wrms")[1],
+                        prob=c(0.75,0.5,0.25),pts=NULL,yrs=NULL,nwrms=10){
 
-    yrs =year
-    year=max(year)
     #require(LaF)
     if (any(length(grep("derived_posteriors.sso",object))<1)) 
         stop("file needs to be called 'derived_posteriors.sso'")
 
     if (length(object)==1)
-       res=ioSS(object,what=what,prob=prob,yrs=yrs,year=year,nrows=nrows,nwrms=nwrms,thin=thin)
+       res=ioSS3(object,what=what,prob=prob,yrs=yrs,pts=pts,nrows=nrows,nwrms=nwrms,thin=thin)
     
     if (length(object) >1){
-       res=mlply(object, function(x,prob=prob,yrs=yrs,year=year,nrows=nrows,nwrms=nwrms,thin=thin,what=what)
-                             ioSS(x,prob=prob,yrs=yrs,year=year,nrows=nrows,nwrms=nwrms,thin=thin,what=what),
-                                    prob=prob,yrs=yrs,year=year,nrows=nrows,nwrms=nwrms,thin=thin,what=what)
+       res=mlply(object, function(x,prob=prob,yrs=yrs,pts=pts,nrows=nrows,nwrms=nwrms,thin=thin,what=what)
+                                   ioSS3(x,prob=prob,yrs=yrs,pts=pts,nrows=nrows,nwrms=nwrms,thin=thin,what=what),
+                      prob=prob,yrs=yrs,pts=pts,nrows=nrows,nwrms=nwrms,thin=thin,what=what)
                  
        res=list(trks=ldply(res, function(x) x$trks),
                 pts =ldply(res, function(x) x$pts),
@@ -35,15 +33,14 @@ kobeSS=function(object,nrows=-1,thin=1,what=c("sims","trks","pts","smry","wrms")
       return(res[what]) }
 
 ## Heavy lifting functions ##############################################################
-ioSS=function(x,prob=c(0.75,0.5,0.25),yrs=NULL,year=NULL,nwrms=10,
-              what=c("sims","trks","pts","smry","wrms"),nrows=-1,thin=1){
+ioSS3=function(x,prob=c(0.75,0.5,0.25),yrs=NULL,pts=NULL,nwrms=10,what=c("sims","trks","pts","smry","wrms"),nrows=-1,thin=1){
  
     if (is.null(yrs)){
        nms=names(read.csv(x,sep=" ",nrows=1))
        yrs=nms[substr(nms,1,3)=="Bra"]
        yrs=as.numeric(substr(yrs,8,nchar(yrs)))}
 
-    if (is.null(year)){
+    if (is.null(pts)){
        nms=names(read.csv(x,sep=" ",nrows=1))
        pts=nms[substr(nms,1,3)=="For"]
        pts=min(as.numeric(substr(pts,11,nchar(pts))))-1
@@ -104,7 +101,7 @@ ioSS=function(x,prob=c(0.75,0.5,0.25),yrs=NULL,year=NULL,nwrms=10,
        pts.=res[res$year %in% yrs,]
     
     if ("smry" %in% what)
-       smry   =ddply(res,  .(year), function(x) data.frame(stock      =median(x$stock,     na.rm=TRUE),
+       smry   =ddply(res,  .(year), function(x) data.frame(stock      =median(x$stock,       na.rm=TRUE),
                                                            harvest    =median(x$harvest,   na.rm=TRUE),
                                                            red        =mean(x$red,         na.rm=TRUE),
                                                            yellow     =mean(x$yellow,      na.rm=TRUE),

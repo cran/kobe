@@ -1,4 +1,4 @@
-  % kobe.Rnw --
+% kobe.Rnw --
 %
 % Author: laurence kell <lauriekell@gmail.com>
 
@@ -13,12 +13,36 @@
 \documentclass[shortnames,nojss,article]{jss}
 
 \usepackage{booktabs,flafter} %,thumbpdf}
-%\usepackage[onehalfspacing]{setspace}
+\usepackage[onehalfspacing]{setspace}
 \usepackage{natbib} \bibliographystyle{plain}
 \usepackage{graphicx, psfrag, Sweave}
 \usepackage{enumerate}
 \usepackage{hyperref}
 
+\usepackage{geometry}
+\usepackage{framed}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\geometry{verbose,a4paper,tmargin=2cm,bmargin=1.5cm,lmargin=2cm,rmargin=3cm}
+\definecolor{shadecolor}{rgb}{0.9,0.9,0.9}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+\definecolor{shadecolor}{rgb}{1,1,0.95}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\onehalfspacing
+%\hypersetup{colorlinks, urlcolor=darkblue}
+
+
+\newenvironment{mylisting}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\scriptsize\bfseries}
+{\end{list}}
+
+\newenvironment{mytinylisting}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\tiny\bfseries}
+{\end{list}}
 %\newcommand{\code}[1]{\texttt{#1}}
 %\newcommand{\proglang}[1]{\textsf{#1}}
 %\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
@@ -54,13 +78,10 @@
 %% need no \usepackage{Sweave.sty}
 
 <<prelim,echo=FALSE,print=FALSE>>=
+library(ggplot2)
+library(plyr)
 library(kobe)
-
-kobe.version <- packageDescription("kobe")$Version
-kobe.date <- packageDescription("kobe")$Date
-now.date <- strftime(Sys.Date(), "%B %d, %Y")
-
-library(RCurl	)
+library(reshape)
 
 data(prj1)
 data(prj)
@@ -314,7 +335,7 @@ The phase plots show the cross correlations between stock and harvest, but many 
 to determine the actual probabilities or densities. To overcome this difficulty contours showing the bivariate probabilities 
 can be plotted using \code{kobeP} e.g.
 
-<<echo=TRUE,fig=FALSE>>=
+<<eval=FALSE,echo=TRUE,fig=FALSE>>=
 kp2 = kp + geom_path(aes(x,y,group=level),colour="blue",
                     data=ddply(subset(sims,year==2010 & TAC==15000),.(Run), 
                                function(pts) kobeProb(pts$stock,pts$harvest,prob=c(0.7,.5,.25)))) +
@@ -323,7 +344,7 @@ kp2 = kp + geom_path(aes(x,y,group=level),colour="blue",
 @
 
 \begin{figure}\begin{center}
-<<echo=TRUE,fig=TRUE,width=7,height=7>>=
+<<eval=FALSE,echo=TRUE,fig=TRUE,width=7,height=7>>=
 print(kp2)
 @
 \caption{Phase plot of fishng mortality and stock status reletive to $F_{MSY}$ and  $B_{MSY}$, large point and lines are the medians
@@ -378,7 +399,7 @@ pie.dat=ddply(melt(pie.dat,id.vars="Run"),.(Run,variable),
 
 ## pie charts
 ggplot(subset(pie.dat,value>0), aes(x =factor(1), y=value, fill = variable)) + 
-  geom_bar(width = 1) + 
+  geom_bar(width=1,stat="identity") + 
   coord_polar(theta="y") +
   labs(fill='Kobe Quadrant') + xlab('') + ylab('')       +
   scale_fill_manual(values=c("red","green","yellow"))    + 
@@ -393,7 +414,8 @@ ggplot(subset(pie.dat,value>0), aes(x =factor(1), y=value, fill = variable)) +
 \subsubsection{Kobe II Strategy Matrix}
 
 \begin{figure}\begin{center}
-<<echo=TRUE,fig=TRUE,width=6,height=8,eval=FALSE>>=
+<<echo=TRUE,fig=TRUE,width=6,height=8,eval=TRUE>>=
+library(akima)
 Interp=function(x,levels=seq(0.0,1.0,0.05),
                col   =c(colorRampPalette(c("red4","red"))(12),colorRampPalette(c("yellowgreen","darkgreen"))(8)),
                nIterp=101){
